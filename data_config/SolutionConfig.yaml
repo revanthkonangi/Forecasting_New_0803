@@ -1,0 +1,90 @@
+database_name: Forecasting_0803
+ds_environment: dev
+sdk_session_id_dev: f2873b665d0047b19214f386642126e4
+sdk_session_id_uat: 656ec137045b9d595a23fdd6
+sdk_session_id_prod: 64ec92d6117247877965d152 #update
+
+data_engineering:
+  data_engineering_ft:
+    features_dbfs_path: dbfs:/mnt/mlcore/dev/source/Forecasting_Features_1409_ae0b14f275f949fc9b27b7d0efe0498e
+    features_table_name: Features_0803_v1
+    primary_keys:
+    - Index
+  data_engineering_gt:
+    ground_truth_dbfs_path: dbfs:/mnt/mlcore/dev/source/Ground_TruthGT_1409_c74c85c9f6b64c86a92c2bde7b668ef2
+    ground_truth_table_name: GroundTruth_0803_v1
+    primary_keys:
+    - Index
+data_prep_deployments:
+  data_prep_deployment_ft:
+    batch_size: 100
+    cron_job_schedule: 0 */3 * ? * *
+    features_dbfs_path: Features_0803_v1
+    is_scheduled: true
+    primary_keys:
+    - Index
+    transformed_features_table_name: DPD_Features_0803_v1
+  data_prep_deployment_gt:
+    batch_size: 100
+    cron_job_schedule: 0 */3 * ? * *
+    ground_truth_dbfs_path: GroundTruth_0803_v1
+    is_scheduled: true
+    primary_keys:
+    - Index
+    transformed_ground_truth_table_name: DPD_GroundTruth_0803_v1
+feature_pipelines:
+  feature_pipelines_ft:
+    features_dbfs_path: Features_0803_v1
+    is_scheduled: false
+    primary_keys:
+    - Index
+    transformed_features_table_name: Transformed_Features_0803_v1
+  feature_pipelines_gt:
+    ground_truth_dbfs_path: GroundTruth_0803_v1
+    is_scheduled: false
+    primary_keys:
+    - Index
+    transformed_ground_truth_table_name: Transformed_GroundTruth_0803_v1
+inference:
+  batch_size: 100
+  cron_job_schedule: 0 */3 * ? * *
+  ground_truth_path: DPD_GroundTruth_0803_v1
+  model_name: forecasting_0803_v1
+  model_version: '1'
+  output_table_name: inference_output_forecasting_0603_v2
+  transformed_features_path: DPD_Features_0803_v1
+train:
+  feature_columns:
+  - Open
+  - High
+  - Low
+  - Volume
+  date_column: 'Stock_Date'
+  feature_table_path: Transformed_Features_0803_v1
+  ground_truth_path: Transformed_GroundTruth_0803_v1
+  horizon: 7
+  frequency: 'D'
+  model_name: forecasting_0803_v1
+  model_version: '1'
+  primary_keys:
+  - Index
+  target_columns:
+  - Close
+  test_size: 0.2
+  train_output_table_name: train_output_forecasting_0803_v1
+  hyperparameter_tuning:
+    max_evaluations : 2
+    primary_metric : r2
+    search_range :
+      seasonality_prior_scale : 
+        - 0.1
+        - 10
+      changepoint_prior_scale : 
+        - 0.01
+        - 0.5
+      seasonality_mode : 
+        - multiplicative
+        - additive
+    stop_early : false
+    run_parallel : false
+
