@@ -5,5 +5,5 @@ notebook_task:
   base_parameters:
     env: "${ENV_VARIABLE}"
 schedule:
-  quartz_cron_expression: "0 0/2 * 1/1 * ? *"
+  quartz_cron_expression: "0 0/20 * 1/1 * ? *"
   timezone_id: Asia/Calcutta
